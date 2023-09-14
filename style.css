@@ -1,0 +1,16 @@
+html{
+    height:100%;
+}
+
+body{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: blueviolet;
+}
+
+svg{
+    background-color: #08f71c;
+    align-items: center;
+}
