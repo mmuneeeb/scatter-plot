@@ -7,50 +7,42 @@ let width = 800;
 let height = 600;
 let padding = 40;
 
-let yScale
-let xScale 
-
 let xAxisScale
 let yAxisScale
 
 let svg = d3.select('svg')
+let tooltip = d3.select('#tooltip')
 
 let drawCanvas = () => {
     svg.attr("height", height)
        .attr("width", width)
 }
 
-let generateScales = () => {
-    yScale = d3.scaleLinear()
-               .domain([0, d3.max(data, d => {return d[0]})])
-               .range([0, height-2*padding])
-    xScale = d3.scaleLinear()
-               .domain([0, data.length-1])
-               .range([padding, width-padding])
-
-             
+let generateScales = () => {          
 
     xAxisScale = d3.scaleLinear()
-                   .domain([d3.min(data, d => {return d[4]})], d3.max(data, d => {return d[4]}))
+                   .domain([d3.min(data, d => {return d['Year']})-1, d3.max(data, d => {return d['Year']})+1])
                    .range([padding, width-padding])
     yAxisScale = d3.scaleTime()
-                   .domain([d3.min(data, d => {return d[0]})], d3.max(data, d => {return d[0]}))
+                   .domain([d3.min(data, d => {return new Date(d['Seconds'] * 1000)}), d3.max(data, d => {return new Date(d['Seconds'] * 1000)})])
                    .range([padding, height - padding])
 
 }
 
 let generateAxis = () => {
     let xAxis = d3.axisBottom(xAxisScale)
+                  .tickFormat(d3.format('d'))
     svg.append('g')
        .call(xAxis)
        .attr('id', 'x-axis')
-       .attr('transform', 'translate(0,' + (height-padding) +")")
+       .attr('transform', 'translate(0,' + (height-padding) +')')
 
     let yAxis = d3.axisLeft(yAxisScale)
+                  .tickFormat(d3.timeFormat('%M:%S'))
     svg.append('g')
         .call(yAxis)
         .attr('id', 'y-axis')
-        .attr('transform', "translate("+ padding + ",0)")
+        .attr('transform', 'translate('+ padding + ',0)')
 
 }
 
@@ -60,10 +52,30 @@ let generatePoints = () => {
        .enter()
        .append('circle')
        .attr('class', 'dot')
-       .attr("r", 5)
-       .attr("cx",)
-       .attr("cy",)
+       .attr("r", '5')
+       .attr('cx', (d) => {return xAxisScale(d['Year'])})
+       .attr('cy', (d) => {return yAxisScale(new Date(d['Seconds'] * 1000))})
+       .attr('fill', (d) => {
+        if(d['Doping'] != ''){
+            return 'blue'
+        } else {
+            return 'orange'
+        }
+    })
+       .on('mouseover', d => {
+        tooltip.transition()
+               .style('visibility', 'visible')
 
+        if (d['Doping'] != ''){
+            tooltip.text(d['Year'] + '\n' + d['Name'] + '\n' + d['Nationality'] + '\n' + d['Time'] + '\n' + d['Doping'] + '\n' + d['URL'])
+        }
+
+        tooltip.attr()
+       })
+       .on('mouseout', d => {
+        tooltip.transition()
+               .style('visibility', 'hidden')
+       })
 
 }
 

@@ -14,3 +14,9 @@ svg{
     background-color: #08f71c;
     align-items: center;
 }
+
+#tooptip{
+    background-color: whitesmoke;
+    visibility: hidden;
+    width: auto;
+}
